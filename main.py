@@ -1,13 +1,13 @@
 from typing import Optional
 from uuid import UUID
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel
 from pydantic import EmailStr
 from pydantic import Field
 
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 
 
 app = FastAPI()
@@ -33,6 +33,35 @@ class Tweet(BaseModel):
     by : User = Field(...)
 
 
+
+#path operations
+
 @app.get("/")
 def home():
     return {"message" : "hola monda"}
+
+##users
+
+@app.post("/signup", response_model=User, status_code=status.HTTP_201_CREATED, summary="Register a user", tags=["User"])
+def signup():
+    pass
+
+@app.post("/login", response_model=User, status_code=status.HTTP_200_CREATED, summary="login a user", tags=["User"])
+def login():
+    pass
+
+@app.get("/users", response_model=List[User], status_code=status.HTTP_200_CREATED, summary="show all user", tags=["User"])
+def show_all_users():
+    pass
+
+@app.get("/users/{user_id}", response_model=User, status_code=status.HTTP_200_CREATED, summary="show a user", tags=["User"])
+def show_a_user():
+    pass
+
+@app.delete("/users/{user_id}", response_model=User, status_code=status.HTTP_200_CREATED, summary="Delete a user", tags=["User"])
+def delete_a_user():
+    pass
+
+@app.put("/users/{user_id}", response_model=User, status_code=status.HTTP_200_CREATED, summary="Update a user", tags=["User"])
+def update_a_user():
+    pass
