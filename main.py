@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from pydantic import EmailStr
 from pydantic import Field
 
-from fastapi import FastAPI, status, Body
+from fastapi import FastAPI, status, Body, HTTPException
 
 
 app = FastAPI()
@@ -70,9 +70,19 @@ def signup(user: UserRegister = Body(...)):
         return user
 
 
-@app.post("/login", response_model=User, status_code=status.HTTP_200_OK, summary="login a user", tags=["User"])
-def login():
-    pass
+@app.post("/login", response_model=UserLogin, status_code=status.HTTP_200_OK, summary="login a user", tags=["User"])
+def login(user: UserLogin = Body(...)):
+    with open("users.json","r", encoding="utf-8") as f:
+        esta = False
+        users = json.loads(f.read())
+        user_dict = user.dict()
+        for i in users:
+            if user_dict["email"] == i["email"] and user_dict["password"] == i["password"]:
+                esta = True
+        if esta:
+            return user
+        else:
+            raise HTTPException(status_code=404, detail="user not found")
 
 @app.get("/users", response_model=List[User], status_code=status.HTTP_200_OK, summary="show all user", tags=["User"])
 def show_all_users():
