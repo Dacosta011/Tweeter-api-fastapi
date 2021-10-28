@@ -25,6 +25,9 @@ class User(UserBase):
     last_name: str = Field(...,min_length = 1, max_length = 50)
     birth_date: Optional[date] = Field(default=None)
 
+class UserRegister(User):
+    password: str = Field(..., min_length=8, max_length=64) 
+
 class Tweet(BaseModel):
     Tweet_id : UUID = Field(...)
     content : str = Field(..., max_length=256, min_length=1)
@@ -40,7 +43,13 @@ class Tweet(BaseModel):
 
 @app.post("/signup", response_model=User, status_code=status.HTTP_201_CREATED, summary="Register a user", tags=["User"])
 def signup():
-    pass
+    """
+    This path register a user in the app
+
+    Parameters:
+        -request body parameter
+        -
+    """
 
 @app.post("/login", response_model=User, status_code=status.HTTP_200_OK, summary="login a user", tags=["User"])
 def login():
