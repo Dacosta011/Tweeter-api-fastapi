@@ -1,4 +1,5 @@
 import json
+from os import path, stat
 from typing import Optional
 from uuid import UUID
 from datetime import date, datetime
@@ -8,7 +9,7 @@ from pydantic import BaseModel
 from pydantic import EmailStr
 from pydantic import Field
 
-from fastapi import FastAPI, status, Body, HTTPException
+from fastapi import FastAPI, status, Body, HTTPException, Path
 
 
 app = FastAPI()
@@ -92,8 +93,17 @@ def show_all_users():
 
 
 @app.get("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK, summary="show a user", tags=["User"])
-def show_a_user():
-    pass
+def show_a_user(user_id: str = Path(...)):
+     with open("users.json", "r", encoding="utf-8") as f:
+        user = None
+        users = json.loads(f.read())
+        for i in users:
+            if i["user_id"] == str(user_id):
+                user = i
+        if user is not None:
+            return user
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
 
 @app.delete("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK, summary="Delete a user", tags=["User"])
 def delete_a_user():
