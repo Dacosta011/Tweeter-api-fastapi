@@ -76,7 +76,10 @@ def login():
 
 @app.get("/users", response_model=List[User], status_code=status.HTTP_200_OK, summary="show all user", tags=["User"])
 def show_all_users():
-    pass
+    with open("users.json", "r", encoding="utf-8") as f:
+        users = json.loads(f.read())
+        return users
+
 
 @app.get("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK, summary="show a user", tags=["User"])
 def show_a_user():
