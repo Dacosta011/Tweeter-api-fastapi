@@ -27,8 +27,8 @@ class User(UserBase):
 
 class Tweet(BaseModel):
     Tweet_id : UUID = Field(...)
-    content : str = Field(..., max_length=256, min_items=1)
-    created_at : datetime = Field(..., default=datetime.now())
+    content : str = Field(..., max_length=256, min_length=1)
+    created_at : datetime = Field(default = None)
     updated_at : Optional[datetime] = Field(default=None)
     by : User = Field(...)
 
@@ -36,32 +36,53 @@ class Tweet(BaseModel):
 
 #path operations
 
-@app.get("/")
-def home():
-    return {"message" : "hola monda"}
-
 ##users
 
 @app.post("/signup", response_model=User, status_code=status.HTTP_201_CREATED, summary="Register a user", tags=["User"])
 def signup():
     pass
 
-@app.post("/login", response_model=User, status_code=status.HTTP_200_CREATED, summary="login a user", tags=["User"])
+@app.post("/login", response_model=User, status_code=status.HTTP_200_OK, summary="login a user", tags=["User"])
 def login():
     pass
 
-@app.get("/users", response_model=List[User], status_code=status.HTTP_200_CREATED, summary="show all user", tags=["User"])
+@app.get("/users", response_model=List[User], status_code=status.HTTP_200_OK, summary="show all user", tags=["User"])
 def show_all_users():
     pass
 
-@app.get("/users/{user_id}", response_model=User, status_code=status.HTTP_200_CREATED, summary="show a user", tags=["User"])
+@app.get("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK, summary="show a user", tags=["User"])
 def show_a_user():
     pass
 
-@app.delete("/users/{user_id}", response_model=User, status_code=status.HTTP_200_CREATED, summary="Delete a user", tags=["User"])
+@app.delete("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK, summary="Delete a user", tags=["User"])
 def delete_a_user():
     pass
 
-@app.put("/users/{user_id}", response_model=User, status_code=status.HTTP_200_CREATED, summary="Update a user", tags=["User"])
+@app.put("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK, summary="Update a user", tags=["User"])
 def update_a_user():
+    pass
+
+
+##tweets
+
+@app.get("/", response_model=List[Tweet], status_code=status.HTTP_200_OK, summary="show all tweets", tags=["Tweets"])
+def home():
+    print("sapo hp")
+
+@app.post("/post", response_model=Tweet, status_code=status.HTTP_201_CREATED, summary="Post a tweet", tags=["Tweets"])
+def post():
+    pass
+
+@app.get("/tweets/{tweet_id}", response_model=Tweet, status_code=status.HTTP_200_OK, summary="show a tweet", tags=["Tweets"])
+def show_a_tweet():
+    pass
+
+
+@app.delete("/tweets/{tweet_id}", response_model=Tweet, status_code=status.HTTP_200_OK, summary="delete a tweet", tags=["Tweets"])
+def delete_a_tweet():
+    pass
+
+
+@app.put("/tweets/{tweet_id}", response_model=Tweet, status_code=status.HTTP_200_OK, summary="update a tweet", tags=["Tweets"])
+def update_a_tweet():
     pass
