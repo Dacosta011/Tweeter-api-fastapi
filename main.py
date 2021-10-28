@@ -163,9 +163,17 @@ def post(tweet: Tweet = Body(...)):
         return tweet
 
 @app.get("/tweets/{tweet_id}", response_model=Tweet, status_code=status.HTTP_200_OK, summary="show a tweet", tags=["Tweets"])
-def show_a_tweet():
-    pass
-
+def show_a_tweet(tweet_id : str = Path(...)):
+    with open("tweets.json", "r", encoding="utf-8") as f :
+        tw = None
+        tweets = json.loads(f.read())
+        for i in tweets:
+            if i["Tweet_id"] == str(tweet_id):
+                tw = i
+        if tw is not None:
+            return tw
+        else:
+            raise HTTPException(status_code=404, detail="tweet not found")
 
 @app.delete("/tweets/{tweet_id}", response_model=Tweet, status_code=status.HTTP_200_OK, summary="delete a tweet", tags=["Tweets"])
 def delete_a_tweet():
