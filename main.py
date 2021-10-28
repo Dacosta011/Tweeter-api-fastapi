@@ -176,10 +176,39 @@ def show_a_tweet(tweet_id : str = Path(...)):
             raise HTTPException(status_code=404, detail="tweet not found")
 
 @app.delete("/tweets/{tweet_id}", response_model=Tweet, status_code=status.HTTP_200_OK, summary="delete a tweet", tags=["Tweets"])
-def delete_a_tweet():
-    pass
-
+def delete_a_tweet(tweet_id : str = Path(...)):
+    with open("tweets.json", "r+", encoding="utf-8") as f :
+        found = False
+        tweets = json.loads(f.read())
+        for i in tweets:
+           if i["Tweet_id"] == str(tweet_id):
+                found = True
+                tweets.pop(tweets.index(i))
+                f.seek(0)
+                f.truncate()
+                f.write(json.dumps(tweets))
+        if not found:
+            raise HTTPException(status_code=404, detail="tweet not found")
 
 @app.put("/tweets/{tweet_id}", response_model=Tweet, status_code=status.HTTP_200_OK, summary="update a tweet", tags=["Tweets"])
-def update_a_tweet():
-    pass
+def update_a_tweet(tweet_id: str = Path(...), tweet : Tweet = Body(...)):
+    with open("tweets.json", "r+", encoding="utf-8") as f :
+        found = False
+        results = json.loads(f.read())
+        tweet_dict = tweet.dict()
+        tweet_dict["Tweet_id"] = str(tweet_dict["Tweet_id"])
+        tweet_dict["created_at"] = str(tweet_dict["created_at"])
+        tweet_dict["by"]["user_id"] = str(tweet_dict["by"]["user_id"])
+        tweet_dict["by"]["birth_date"] = str(tweet_dict["by"]["birth_date"])
+        tweet_dict["updated_at"] = str(tweet_dict["updated_at"])
+        for i in results:
+            if i["Tweet_id"] == tweet_dict["Tweet_id"]:
+                found = True
+                results[results.index(i)] = tweet_dict
+                f.seek(0)
+                f.truncate()
+                f.write(json.dumps(results))
+        if found:
+            return tweet_dict
+        else:
+            raise HTTPException(status_code=404, detail="tweet not exists")
