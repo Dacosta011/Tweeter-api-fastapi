@@ -122,9 +122,22 @@ def delete_a_user(user_id: str = Path(...)):
             raise HTTPException(status_code=404, detail="user not exists")
 
 @app.put("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK, summary="Update a user", tags=["User"])
-def update_a_user():
-    pass
-
+def update_a_user(user_id : str = Path(...), user: UserRegister = Body(...)):
+    with open("users.json", "r+", encoding="utf-8") as f:
+        found = False
+        users = json.loads(f.read())
+        user_dict = user.dict()
+        user_dict["user_id"] = str(user_dict["user_id"])
+        user_dict["birth_date"] = str(user_dict["birth_date"])
+        for i in users:
+            if i["user_id"] == str(user_id):
+                users[users.index(i)] = user_dict
+                f.seek(0)
+                f.truncate()
+                f.write(json.dumps(users))
+                found = True
+        if not found:
+            raise HTTPException(status_code=404, detail="user not exists")
 
 ##tweets
 
