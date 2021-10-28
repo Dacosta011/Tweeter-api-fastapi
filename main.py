@@ -98,7 +98,9 @@ def update_a_user():
 
 @app.get("/", response_model=List[Tweet], status_code=status.HTTP_200_OK, summary="show all tweets", tags=["Tweets"])
 def home():
-    print("sapo hp")
+    with open("tweets.json", "r", encoding="utf-8") as f:
+        tweets = json.loads(f.read())
+        return(tweets)
 
 @app.post("/post", response_model=Tweet, status_code=status.HTTP_201_CREATED, summary="Post a tweet", tags=["Tweets"])
 def post(tweet: Tweet = Body(...)):
