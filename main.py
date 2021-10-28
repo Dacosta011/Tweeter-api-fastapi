@@ -10,6 +10,7 @@ from pydantic import EmailStr
 from pydantic import Field
 
 from fastapi import FastAPI, status, Body, HTTPException, Path
+from pydantic.networks import HttpUrl
 
 
 app = FastAPI()
@@ -106,8 +107,19 @@ def show_a_user(user_id: str = Path(...)):
             raise HTTPException(status_code=404, detail="User not found")
 
 @app.delete("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK, summary="Delete a user", tags=["User"])
-def delete_a_user():
-    pass
+def delete_a_user(user_id: str = Path(...)):
+    with open("users.json", "r+", encoding="utf-8") as f:
+        found = False
+        users = json.loads(f.read())
+        for i in users:
+            if i["user_id"] == str(user_id):
+                found = True
+                users.pop(users.index(i))
+                f.seek(0)
+                f.truncate()
+                f.write(json.dumps(users))
+        if not found:
+            raise HTTPException(status_code=404, detail="user not exists")
 
 @app.put("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK, summary="Update a user", tags=["User"])
 def update_a_user():
